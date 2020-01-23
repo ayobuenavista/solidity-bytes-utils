@@ -5,7 +5,8 @@
  * @dev Bytes tightly packed arrays utility library for ethereum contracts written in Solidity.
  *      The library lets you concatenate, slice and type cast bytes arrays both in memory and storage.
  */
-pragma solidity ^0.5.0;
+
+pragma solidity 0.5.11;
 
 
 library BytesLib {
@@ -76,7 +77,7 @@ library BytesLib {
             // Update the free-memory pointer by padding our last write location
             // to 32 bytes: add 31 bytes to the end of tempBytes to move to the
             // next 32 byte block, then round down to the nearest multiple of
-            // 32. If the sum of the length of the two arrays is zero then add
+            // 32. If the sum of the length of the two arrays is zero then add 
             // one before rounding down to leave a blank 32 bytes (the length block with 0).
             mstore(0x40, and(
               add(add(end, iszero(add(length, mload(_preBytes)))), 31),
@@ -206,8 +207,8 @@ library BytesLib {
                 let mask := sub(exp(0x100, submod), 1)
 
                 sstore(sc, add(sload(sc), and(mload(mc), mask)))
-
-                for {
+                
+                for { 
                     sc := add(sc, 1)
                     mc := add(mc, 0x20)
                 } lt(mc, end) {
@@ -233,7 +234,7 @@ library BytesLib {
         pure
         returns (bytes memory)
     {
-        require(_bytes.length >= (_start + _length));
+        require(_bytes.length >= (_start + _length), "slice: insufficient byte length");
 
         bytes memory tempBytes;
 
@@ -290,7 +291,7 @@ library BytesLib {
     }
 
     function toAddress(bytes memory _bytes, uint _start) internal  pure returns (address) {
-        require(_bytes.length >= (_start + 20));
+        require(_bytes.length >= (_start + 20), "toAddress: insufficient byte length");
         address tempAddress;
 
         assembly {
@@ -301,7 +302,7 @@ library BytesLib {
     }
 
     function toUint8(bytes memory _bytes, uint _start) internal  pure returns (uint8) {
-        require(_bytes.length >= (_start + 1));
+        require(_bytes.length >= (_start + 1), "toUint8: insufficient byte length");
         uint8 tempUint;
 
         assembly {
@@ -312,7 +313,7 @@ library BytesLib {
     }
 
     function toUint16(bytes memory _bytes, uint _start) internal  pure returns (uint16) {
-        require(_bytes.length >= (_start + 2));
+        require(_bytes.length >= (_start + 2), "toUint16: insufficient byte length");
         uint16 tempUint;
 
         assembly {
@@ -323,7 +324,7 @@ library BytesLib {
     }
 
     function toUint32(bytes memory _bytes, uint _start) internal  pure returns (uint32) {
-        require(_bytes.length >= (_start + 4));
+        require(_bytes.length >= (_start + 4), "toUint32: insufficient byte length");
         uint32 tempUint;
 
         assembly {
@@ -334,7 +335,7 @@ library BytesLib {
     }
 
     function toUint64(bytes memory _bytes, uint _start) internal  pure returns (uint64) {
-        require(_bytes.length >= (_start + 8));
+        require(_bytes.length >= (_start + 8), "toUint64: insufficient byte length");
         uint64 tempUint;
 
         assembly {
@@ -345,7 +346,7 @@ library BytesLib {
     }
 
     function toUint96(bytes memory _bytes, uint _start) internal  pure returns (uint96) {
-        require(_bytes.length >= (_start + 12));
+        require(_bytes.length >= (_start + 12), "toUint96: insufficient byte length");
         uint96 tempUint;
 
         assembly {
@@ -356,7 +357,7 @@ library BytesLib {
     }
 
     function toUint128(bytes memory _bytes, uint _start) internal  pure returns (uint128) {
-        require(_bytes.length >= (_start + 16));
+        require(_bytes.length >= (_start + 16), "toUint128: insufficient byte length");
         uint128 tempUint;
 
         assembly {
@@ -367,7 +368,7 @@ library BytesLib {
     }
 
     function toUint(bytes memory _bytes, uint _start) internal  pure returns (uint256) {
-        require(_bytes.length >= (_start + 32));
+        require(_bytes.length >= (_start + 32), "toUint: insufficient byte length");
         uint256 tempUint;
 
         assembly {
@@ -378,7 +379,7 @@ library BytesLib {
     }
 
     function toBytes32(bytes memory _bytes, uint _start) internal  pure returns (bytes32) {
-        require(_bytes.length >= (_start + 32));
+        require(_bytes.length >= (_start + 32), "toBytes32: insufficient byte length");
         bytes32 tempBytes32;
 
         assembly {
@@ -386,6 +387,17 @@ library BytesLib {
         }
 
         return tempBytes32;
+    }
+
+    function toBytes3(bytes memory _bytes, uint _start) internal  pure returns (bytes3) {
+        require(_bytes.length >= (_start + 3), "toBytes3: insufficient byte length");
+        bytes3 tempBytes3;
+
+        assembly {
+            tempBytes3 := mload(add(add(_bytes, 0x20), _start))
+        }
+
+        return tempBytes3;
     }
 
     function equal(bytes memory _preBytes, bytes memory _postBytes) internal pure returns (bool) {
